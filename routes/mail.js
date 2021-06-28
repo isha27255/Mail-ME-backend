@@ -19,13 +19,12 @@ router.post("/:id/mail", (req, res) => {
              const schedule = req.body.schedule;
              const mail_body = req.body.mail_body;
              const recur=Number(req.body.recur);
-             const date=req.body.date;
+             const date=Date.parse(req.body.date);
              const time=req.body.time;
              const weekly_day=Number(req.body.weekly_day);
             
             let pass=user.encrypt_pass;
             const x=cryptr.decrypt(pass );
-            
               const new_mail = new Mail({to, cc, subject, schedule, recur, date, time, weekly_day, mail_body});
               new_mail.user = user._id;
               new_mail.save()
@@ -34,9 +33,8 @@ router.post("/:id/mail", (req, res) => {
              user.mails.push(new_mail._id);
              user.save();
             
-          
-        let month=parseInt(date.substring(0,2));
-        let day=parseInt(date.substring(3,5));
+        let month=new_mail.date.getMonth()+1;
+        let day=new_mail.date.getDate();
         let hour=parseInt(time.substring(0,2));
         let min=parseInt(time.substring(3,5));
 
@@ -92,7 +90,7 @@ router.post("/:id/mail", (req, res) => {
             });
             });
         }
-        if(schedule.localeCompare("monthly")==0)
+        else if(schedule.localeCompare("monthly")==0)
         {
             cron.schedule(`0 ${min} ${hour} ${day} * *`, () => {
                 let mailOptions = {
@@ -117,7 +115,7 @@ router.post("/:id/mail", (req, res) => {
             });
             });
         }
-        if(schedule.localeCompare("yearly")==0)
+        else if(schedule.localeCompare("yearly")==0)
         {
             cron.schedule(`0 ${min} ${hour} ${day} ${month} *`, () => {
                 let mailOptions = {
@@ -142,6 +140,29 @@ router.post("/:id/mail", (req, res) => {
             });
             });
         }
+        else
+        {
+          let mailOptions = {
+            from: `${user.email}`,
+            to: `jaiswalbhola97@gmail.com, ${cc}`,
+            subject:`${subject}`,
+            text:`${mail_body}`
+       };
+       let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: user.email,
+          pass: x
+        }
+    });
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+    });
+        }
         
              
           })
@@ -156,16 +177,28 @@ router.post("/:id/mail", (req, res) => {
   });
 
   //future mails
-  router.get("/future-mails", (req, res) => {
+  router.get("/:id/future-mails", (req, res) => {
    
-        Mail.find({recur: 20}, (err,data) => {
-            if(err)
-            console.log(err);
-            else
-            res.send(data);
-        })
+    const today = new Date();
+    const year=today.getFullYear();
+    const month=today.getMonth()+1;
+    const d=today.getDate();
+    Mail.find({ "date": { "$gte": `${year}-${month}-${d}` }, "user": req.params.id})
+    .then(data => res.json(data))
+    .catch(err => res.status(400).json('Error: ' + err));
   });
   
+  //past mails
+  router.get("/:id/past-mails", (req, res) => {
+   
+    const today = new Date();
+    const year=today.getFullYear();
+    const month=today.getMonth()+1;
+    const d=today.getDate();
+    Mail.find({ "date": { "$lt": `${year}-${month}-${d}` }, "user": req.params.id})
+    .then(data => res.json(data))
+    .catch(err => res.status(400).json('Error: ' + err));
+  });
 
 
 module.exports = router;

@@ -25,7 +25,6 @@ const UserSchema = new Schema({
   password: {
     type: String,
     trim: true,
-    required: true,
     validate: [
         function (input) {
           return input.length >= 6;

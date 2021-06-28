@@ -22,7 +22,7 @@ const MailSchema = new Schema({
       type: Number,
   },
   date: {
-    type: String,
+    type: Date,
   },
   time: {
     type: String,
@@ -34,12 +34,12 @@ const MailSchema = new Schema({
     type: String,
     required: true
   },
-  user : [
+  user : 
     {
         type: Schema.Types.ObjectId,
         ref: 'User',
     }
-]
+
 },
 {
     timestamps: true
