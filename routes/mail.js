@@ -140,29 +140,29 @@ router.post("/:id/mail", (req, res) => {
             });
             });
         }
-        else
-        {
-          let mailOptions = {
-            from: `${user.email}`,
-            to: `jaiswalbhola97@gmail.com, ${cc}`,
-            subject:`${subject}`,
-            text:`${mail_body}`
-       };
-       let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: user.email,
-          pass: x
-        }
-    });
-    transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-          console.log(error);
-        } else {
-          console.log('Email sent: ' + info.response);
-        }
-    });
-        }
+    //     else
+    //     {
+    //       let mailOptions = {
+    //         from: `${user.email}`,
+    //         to: `jaiswalbhola97@gmail.com, ${cc}`,
+    //         subject:`${subject}`,
+    //         text:`${mail_body}`
+    //    };
+    //    let transporter = nodemailer.createTransport({
+    //     service: 'gmail',
+    //     auth: {
+    //       user: user.email,
+    //       pass: x
+    //     }
+    // });
+    // transporter.sendMail(mailOptions, function(error, info){
+    //     if (error) {
+    //       console.log(error);
+    //     } else {
+    //       console.log('Email sent: ' + info.response);
+    //     }
+    // });
+    //     }
         
              
           })
