@@ -26,7 +26,7 @@ require("./config/passport")(passport);
 // Routes
 app.use("/api/users", users);
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 
 const UserRouter = require('./routes/users');
 const MailRouter = require('./routes/mail');
